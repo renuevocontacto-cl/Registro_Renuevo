@@ -584,6 +584,15 @@
         </select>
       </div>
 
+      <div class="form-group">
+        <label>Soy</label>
+        <select id="sexo">
+          <option value="">Selecciona una opción</option>
+          <option value="H">Hombre</option>
+          <option value="M">Mujer</option>
+        </select>
+      </div>
+
       <label class="oracion-check">
         <input type="checkbox" id="pidoracion" onchange="toggleOracion(this)" />
         <span>🙏 Quiero pedir oración</span>
@@ -700,6 +709,12 @@
         return;
       }
 
+      const sexo = document.getElementById('sexo').value;
+      if (!sexo) {
+        alert('Por favor indica si eres hombre o mujer.');
+        return;
+      }
+
       const pidoracion = document.getElementById('pidoracion').checked;
       const registro = {
         nombre,
@@ -707,6 +722,8 @@
         telefono: document.getElementById('telefono').value.trim().replace(/[^+0-9]/g, ''),
         email: document.getElementById('email').value.trim(),
         como: document.getElementById('como').value,
+        sexo,
+        sede: 'Puerto Montt',
         oracion: pidoracion,
         motivoOracion: pidoracion ? document.getElementById('oracion').value.trim() : '',
         fecha: new Date().toISOString()
@@ -726,12 +743,23 @@
       // Enviar a Google Sheets
       const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxuz9sahd_v9p7JnmqAxYWEqhv2Oe7J3wHAswywS10HXrXIAkfuuPVLYSHi73lpLrgvgg/exec';
 
-      fetch(SHEETS_URL, {
+      // Panel de registros de Renuevo de Gracia (base de datos propia)
+      const PANEL_URL = 'https://renuevo-registros.fly.dev/api/registro';
+      const alPanel = fetch(PANEL_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify(registro)
+      }).catch(() => null);
+
+      // Se sigue enviando también a Google Sheets mientras dura el cambio
+      const aSheets = fetch(SHEETS_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(registro)
-      })
+      }).catch(() => null);
+
+      Promise.all([alPanel, aSheets])
       .then(() => {
         document.getElementById('success-msg').style.display = 'block';
         btn.textContent = '✅ ¡Enviado!';
