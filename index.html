@@ -584,15 +584,6 @@
         </select>
       </div>
 
-      <div class="form-group">
-        <label>Soy</label>
-        <select id="sexo">
-          <option value="">Selecciona una opción</option>
-          <option value="H">Hombre</option>
-          <option value="M">Mujer</option>
-        </select>
-      </div>
-
       <label class="oracion-check">
         <input type="checkbox" id="pidoracion" onchange="toggleOracion(this)" />
         <span>🙏 Quiero pedir oración</span>
@@ -709,12 +700,6 @@
         return;
       }
 
-      const sexo = document.getElementById('sexo').value;
-      if (!sexo) {
-        alert('Por favor indica si eres hombre o mujer.');
-        return;
-      }
-
       const pidoracion = document.getElementById('pidoracion').checked;
       const registro = {
         nombre,
@@ -722,7 +707,6 @@
         telefono: document.getElementById('telefono').value.trim().replace(/[^+0-9]/g, ''),
         email: document.getElementById('email').value.trim(),
         como: document.getElementById('como').value,
-        sexo,
         sede: 'Puerto Montt',
         oracion: pidoracion,
         motivoOracion: pidoracion ? document.getElementById('oracion').value.trim() : '',
